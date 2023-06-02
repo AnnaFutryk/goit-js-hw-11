@@ -20,7 +20,7 @@ export default class PhotosService{
             `${URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=${this.image_type}&orientation=${this.orientation}&safesearch=${this.safesearch}&page=${this.page}&per_page=${this.perPage}`);
             this.incrementPage();
             this.setTotal(data.totalHits);
-            return data.hits;;
+            return data.hits;
 
 
         //* axios then
