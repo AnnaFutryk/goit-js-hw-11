@@ -8,7 +8,8 @@ import throttle from 'lodash.throttle';
 
 
 const modalLightboxGallery = new SimpleLightbox('.gallery a', {
-  captionDelay: 250,
+    captionDelay: 250,
+    captionsData: 'alt',
 });
 
 const refs = {
@@ -106,21 +107,25 @@ async function fetchPhotos() {
     try {
         const markup = await getPhotosMarkup();
     
-        if (!photosService.hasMorePhotos() && refs.photosWrapper.children.length > 0) {
-            loadMoreBtn.hide();
-            Notify.info("We're sorry, but you've reached the end of search results.");
-        } else if (markup === "") {
+        if (markup === "") {
             Notify.failure('Sorry, there are no images matching your search query. Please try again.');
         } else {
             updatePhotosList(markup);
             modalLightboxGallery.refresh();
+            loadMoreBtn.enable();
+
+            if (!photosService.hasMorePhotos()) {
+                loadMoreBtn.hide();
+                Notify.info("We're sorry, but you've reached the end of search results.");
+            }
         }
+
+    
         scrollPage();
     } catch (err) {
         onError(err)
     }
     
-    loadMoreBtn.enable();
 
 //   return getPhotosMarkup()
 //     .then(() => {
@@ -175,13 +180,13 @@ function onError(err) {
 }
 
 //infinity scroll
-function handleScroll() {
-    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+// function handleScroll() {
+//     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
 
-    if (scrollTop + clientHeight >= scrollHeight - 5) {
+//     if (scrollTop + clientHeight >= scrollHeight - 5) {
        
-        fetchPhotos();
-    }
-}
+//         fetchPhotos();
+//     }
+// }
 
-window.addEventListener('scroll', throttle(handleScroll, 500, { trailing: false }));
+// window.addEventListener('scroll', throttle(handleScroll, 500, { trailing: false }));
