@@ -1,64 +1,44 @@
-import axios from "axios";
+import axios from 'axios';
 
-const URL = 'https://pixabay.com/api/';
-const API_KEY = '9122538-3a80db5de562f69d26380f61e';
+export default class PhotosService {
+  #BASE_URL = 'https://pixabay.com/api/';
+  #API_KEY = '9122538-3a80db5de562f69d26380f61e';
 
-export default class PhotosService{
-    constructor() {
-        this.page = 1;
-        this.perPage = 40;
-        this.searchQuery = '';
-        this.image_type = 'photo';
-        this.orientation = 'horizontal';
-        this.safesearch = true;
-        this.totalPages = 0;
-    }
+  #BASE_SEARCH_PARAMS = {
+    key: this.#API_KEY,
+    image_type: 'photo',
+    orientation: 'horizontal',
+    safesearch: true,
+  };
 
-    async getPhotos() {
-        //   * axios await
-        const { data } = await axios.get(
-            `${URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=${this.image_type}&orientation=${this.orientation}&safesearch=${this.safesearch}&page=${this.page}&per_page=${this.perPage}`);
-            this.incrementPage();
-            this.setTotal(data.totalHits);
-            return data.hits;
+  page = 1;
+  q = null;
+  per_page = 40;
+  totalPages = 0;
 
+  async getPhotos() {
+    const searchParams = new URLSearchParams({
+      ...this.#BASE_SEARCH_PARAMS,
+      page: this.page,
+      q: this.q,
+      per_page: this.per_page,
+    });
+    return await axios.get(`${this.#BASE_URL}?${searchParams}`);
+  }
 
-        //* axios then
-        // return axios
-        // .get(
-        //     `${URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=${this.image_type}&orientation=${this.orientation}&safesearch=${this.safesearch}&page=${this.page}&per_page=${this.perPage}`)
-            
-        //     .then(({data}) => {
-        //         this.incrementPage();
-        //         this.setTotal(data.totalHits);
-        //     return data.hits;
-        //     });
+  resetPage() {
+    this.page = 1;
+  }
 
-        // return fetch(
-        //     `${URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=${this.image_type}&orientation=${this.orientation}&safesearch=${this.safesearch}&page=${this.page}&per_page=${this.perPage}`)
-        //     .then(res => res.json())
-        //     .then(({ hits, totalHits }) => {
-        //         this.incrementPage();
-        //         this.setTotal(totalHits);
-        //     return hits;
-        //     });
-    }
+  incrementPage() {
+    this.page += 1;
+  }
 
-    resetPage() {
-        this.page = 1;
-    }
+  setTotal(total) {
+    this.totalPages = total;
+  }
 
-    incrementPage() {
-        this.page += 1;
-    }
-
-    setTotal(total) {
-        this.totalPages = total;
-    }
-
-    hasMorePhotos() {
-        return this.page < Math.ceil(this.totalPages / this.perPage);
-    }
-
-
+  hasMorePhotos() {
+    return this.page < Math.ceil(this.totalPages / this.per_page);
+  }
 }
