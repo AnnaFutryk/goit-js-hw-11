@@ -59,6 +59,7 @@ function onSubmit(event) {
   }
 
   photosService.resetPage();
+  form.reset();
   getPhotosMarkup();
 }
 
