@@ -110,11 +110,9 @@ async function fetchMorePhotos() {
     loadMoreBtn.enable();
     modalLightboxGallery.refresh();
 
-    if (data.hits.length < photosService.per_page) {
+    if (photosService.page >= data.totalHits / photosService.per_page) {
       loadMoreBtn.hide();
-      return Notify.info(
-        "We're sorry, but you've reached the end of search results."
-      );
+      Notify.info("We're sorry, but you've reached the end of search results.");
     }
   } catch (error) {
     console.log(error);
